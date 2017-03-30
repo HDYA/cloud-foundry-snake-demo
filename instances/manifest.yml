@@ -1,0 +1,6 @@
+---
+applications:
+- name: snake-demo-instance
+  host: demo-instance
+  memory: 256m
+  instances: 10
