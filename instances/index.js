@@ -11,7 +11,7 @@ move = true;
 //move = false;
 
 app.get('/move', function(req, res) {
-    res.set({'Content-Type':'text/json','Encodeing':'utf8'});
+    res.set({'Content-Type':'text/json'});
     res.send({
         instance: instance_id,
         move: move,
