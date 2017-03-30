@@ -1,0 +1,3 @@
+[submodule "hub/rattler-race"]
+	path = hub/rattler-race
+	url = https://github.com/HDYA/rattler-race.git
