@@ -1,0 +1,21 @@
+{
+  "name": "cloud-foundry-snake-demo-hub",
+  "version": "0.1.0",
+  "description": "Project collecting status of instances for the snake game demo of Cloud Foundry",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "cloudfoundry",
+    "demo",
+    "hub"
+  ],
+  "dependencies": {
+    "express": "^4.13.3",
+    "cf-nodejs-client": "^0.13.0"
+  },
+  "author": "HDYA-BackFire",
+  "license": "MIT"
+}

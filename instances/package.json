@@ -1,0 +1,21 @@
+{
+  "name": "cloud-foundry-snake-demo-instances",
+  "version": "0.1.0",
+  "description": "Project showing how instances are updated for the snake game demo of Cloud Foundry",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "cloudfoundry",
+    "demo",
+    "instace"
+  ],
+  "dependencies": {
+    "express": "^4.13.3",
+    "node-uuid": "^1.4.8"
+  },
+  "author": "HDYA-BackFire",
+  "license": "MIT"
+}
