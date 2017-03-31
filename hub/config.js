@@ -7,3 +7,5 @@ exports.cloud_foundry = {
 exports.default_port = 8080;
 
 exports.demo_offline = false;
+
+exports.refresh_interval = 1500;

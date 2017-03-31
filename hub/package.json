@@ -14,6 +14,7 @@
   ],
   "dependencies": {
     "express": "^4.13.3",
+    "request": "^2.81.0",
     "cf-nodejs-client": "^0.13.0"
   },
   "author": "HDYA-BackFire",

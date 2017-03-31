@@ -3,6 +3,8 @@ var config = require('./config.js');
 var express = require('express');
 var app = express();
 
+var request = require('request');
+
 var record = {};
 
 app.use('/demo', express.static('rattler-race'));
@@ -55,16 +57,41 @@ if (!config.demo_offline) {
         user_uaa.setEndPoint(result.authorization_endpoint);
         return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
     }).then((result) => {
-        setInterval(function() {
-            cf_instances.setToken(result);
-            cf_instances.getInstances().then((result) => {
-                console.log(result);
+        cf_apps.setToken(result);
+        return cf_apps.getApps('name:snake-demo-instance')
+    }).then((result) => {
+        setInterval(function () {
+            cf_apps.getStats(result.resources[0].metadata.guid).then((result) => {
+                var record_new = {};
+                for (var index in result) {
+                    var host = result[index].stats.host;
+                    console.log('http://' + result[index].stats.host + ':' + result[index].stats.port + '/move');
+                    request({
+                                url: 'http://' + result[index].stats.host + ':' + result[index].stats.port + '/move',
+                                json: true,
+                                timeout: config.refresh_interval,
+                            }, function (error, response, body) {
+                        if (!error && response.statusCode == 200) {
+                            record[host] = parseInt(data.move);
+                        } else {
+                            record[host] = 2;
+                        }
+                    });
+                    record_new[result[index].stats.host] = true;
+                }
+                for (var index in record) {
+                    if (!record_new[index]) {
+                        delete record[index];
+                    }
+                }
             }).catch((reason) => {
-               console.error("Error: " + reason);
+                console.error("Error: " + reason);
             });
-        }, 1000);
+        }, config.refresh_interval);
+    }).catch((reason) => {
+        console.error("Error: " + reason);
     });
-}
+};
 
 console.log('Hub program starts to listen on port', config.default_port);
 app.listen(config.default_port);
