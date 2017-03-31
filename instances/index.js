@@ -3,7 +3,7 @@ var app = express();
 var uuid = require('node-uuid');  
 var instance_id = uuid.v4();
 
-var default_port = 8888;
+var default_port = 8080;
 var move;
 
 // Choose one of the following two sentence to comment

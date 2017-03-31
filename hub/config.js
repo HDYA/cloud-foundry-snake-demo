@@ -1,9 +1,9 @@
 exports.cloud_foundry = {
-    url: '',
-    username: '',
-    password: '',
+    url: 'https://api.REPLACE_WITH_CLOUD_FOUNDRY_PUBLIC_IP.xip.io',
+    username: 'admin',
+    password: 'c1oudc0w',
 };
 
-exports.default_port = 8888;
+exports.default_port = 8080;
 
-exports.demo_offline = true;
+exports.demo_offline = false;
