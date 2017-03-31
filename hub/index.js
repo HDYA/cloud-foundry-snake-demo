@@ -13,7 +13,7 @@ var count = 0; // Count for test
 
 if (config.demo_offline) {
     app.get('/record', function (req, res) {
-            res.set({ 'Content-Type': 'text/json' });
+        res.set({ 'Content-Type': 'text/json' });
         if (count++ < 10) {
             res.send({
                 '0': 1,
@@ -39,16 +39,32 @@ if (config.demo_offline) {
     });
 } else {
     app.get('/record', function (req, res) {
-            res.set({ 'Content-Type': 'text/json' });
+        res.set({ 'Content-Type': 'text/json' });
         res.send(record);
     });
 }
 console.log('Routers have been set');
 
-const cloud_controller = new (require("cf-nodejs-client")).CloudController(config.cloud_foundry.url);
-const user_uaa = new (require("cf-nodejs-client")).UsersUAA;
-const cf_apps = new (require("cf-nodejs-client")).Apps(config.cloud_foundry.url);
-const cf_instances = new (require("cf-nodejs-client")).ServiceInstances(config.cloud_foundry.url);
+if (!config.demo_offline) {
+    const cloud_controller = new (require("cf-nodejs-client")).CloudController(config.cloud_foundry.url);
+    const user_uaa = new (require("cf-nodejs-client")).UsersUAA;
+    const cf_apps = new (require("cf-nodejs-client")).Apps(config.cloud_foundry.url);
+    const cf_instances = new (require("cf-nodejs-client")).ServiceInstances(config.cloud_foundry.url);
+
+    cloud_controller.getInfo().then((result) => {
+        user_uaa.setEndPoint(result.authorization_endpoint);
+        return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
+    }).then((result) => {
+        setInterval(function() {
+            cf_instances.setToken(result);
+            cf_instances.getInstances().then((result) => {
+                console.log(result);
+            }).catch((reason) => {
+               console.error("Error: " + reason);
+            });
+        }, 1000);
+    });
+}
 
 console.log('Hub program starts to listen on port', config.default_port);
 app.listen(config.default_port);
