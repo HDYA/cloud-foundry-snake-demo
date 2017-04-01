@@ -62,10 +62,9 @@ if (!config.demo_offline) {
         return cf_apps.getApps('name:snake-demo-instance')
     }).then((result) => {
         appGuid = result.resources[0].metadata.guid;
-        instanceCount = parseInt(result.resources[0].entity.instances);
         setInterval(function () {
             cf_apps.getStats(result.resources[0].metadata.guid).then(function (result) {
-                for (var index = 0; index < instanceCount; index++) {
+                for (var index = 0; result[index]; index++) {
                     request({
                         url: result[index].stats.urls[0] + '/move',
                         json: true,
