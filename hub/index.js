@@ -64,9 +64,9 @@ if (!config.demo_offline) {
         appGuid = result.resources[0].metadata.guid;
         setInterval(function () {
             cf_apps.getStats(result.resources[0].metadata.guid).then(function (result) {
-                for (var index = 0; result[index]; index++) {
+                for (var index = 0; result[index] != undefined; index++) {
                     request({
-                        url: result[index].stats.urls[0] + '/move',
+                        url: result[index].stats.uris[0] + '/move',
                         json: true,
                         //timeout: config.refresh_interval,
                         headers: {
