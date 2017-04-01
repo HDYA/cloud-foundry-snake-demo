@@ -12,7 +12,6 @@ console.log('Load static demo pages completed');
 
 var count = 0; // Count for test
 
-
 if (config.demo_offline) {
     app.get('/record', function (req, res) {
         res.set({ 'Content-Type': 'text/json' });
@@ -53,7 +52,7 @@ if (!config.demo_offline) {
     const cf_apps = new (require("cf-nodejs-client")).Apps(config.cloud_foundry.url);
     const cf_instances = new (require("cf-nodejs-client")).ServiceInstances(config.cloud_foundry.url);
 
-    var appGuid;
+    var appGuid, instanceCount;
 
     cloud_controller.getInfo().then((result) => {
         user_uaa.setEndPoint(result.authorization_endpoint);
@@ -63,12 +62,13 @@ if (!config.demo_offline) {
         return cf_apps.getApps('name:snake-demo-instance')
     }).then((result) => {
         appGuid = result.resources[0].metadata.guid;
+        instanceCount = parseInt(result.resources[0].entity.instances);
         return cf_apps.getStats(result.resources[0].metadata.guid)
     }).then((result) => {
         setInterval(function () {
-            for (var index = 0; index < result.length; index++) {
+            for (var index = 0; index < instanceCount; index++) {
                 request({
-                    url: result[index].stats.urls[0],
+                    url: result[index].stats.urls[0] + '/move',
                     json: true,
 //                    timeout: config.refresh_interval,
                     headers: {
