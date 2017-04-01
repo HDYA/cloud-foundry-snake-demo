@@ -62,27 +62,19 @@ if (!config.demo_offline) {
     }).then((result) => {
         setInterval(function () {
             cf_apps.getStats(result.resources[0].metadata.guid).then((result) => {
-                var record_new = {};
                 for (var index in result) {
-                    var host = result[index].stats.host;
                     console.log('http://' + result[index].stats.host + ':' + result[index].stats.port + '/move');
                     request({
-                                url: 'http://' + result[index].stats.host + ':' + result[index].stats.port + '/move',
-                                json: true,
-                                timeout: config.refresh_interval,
-                            }, function (error, response, body) {
+                        url: 'http://' + result[index].stats.host + ':' + result[index].stats.port + '/move',
+                        json: true,
+                        timeout: config.refresh_interval,
+                    }, function (error, response, body) {
                         if (!error && response.statusCode == 200) {
-                            record[host] = parseInt(data.move);
+                            record[body.instance] = parseInt(body.move);
                         } else {
-                            record[host] = 2;
+                            record[body.instance] = 2;
                         }
                     });
-                    record_new[result[index].stats.host] = true;
-                }
-                for (var index in record) {
-                    if (!record_new[index]) {
-                        delete record[index];
-                    }
                 }
             }).catch((reason) => {
                 console.error("Error: " + reason);
