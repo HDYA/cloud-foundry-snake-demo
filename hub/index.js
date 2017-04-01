@@ -63,25 +63,25 @@ if (!config.demo_offline) {
     }).then((result) => {
         appGuid = result.resources[0].metadata.guid;
         instanceCount = parseInt(result.resources[0].entity.instances);
-        return cf_apps.getStats(result.resources[0].metadata.guid)
-    }).then((result) => {
         setInterval(function () {
-            for (var index = 0; index < instanceCount; index++) {
-                request({
-                    url: result[index].stats.urls[0] + '/move',
-                    json: true,
-//                    timeout: config.refresh_interval,
-                    headers: {
-                        "X-CF-APP-INSTANCE": appGuid + ":" + index
-                    },
-                }, function (error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                        record[body.instance] = parseInt(body.move);
-                    } else {
-                        record[body.instance] = 2;
-                    }
-                });
-            }
+            cf_apps.getStats(result.resources[0].metadata.guid).then(function (result) {
+                for (var index = 0; index < instanceCount; index++) {
+                    request({
+                        url: result[index].stats.urls[0] + '/move',
+                        json: true,
+                        //timeout: config.refresh_interval,
+                        headers: {
+                            "X-CF-APP-INSTANCE": appGuid + ":" + index
+                        },
+                    }, function (error, response, body) {
+                        if (!error && response.statusCode == 200) {
+                            record[body.instance] = parseInt(body.move);
+                        } else {
+                            record[body.instance] = 2;
+                        }
+                    });
+                }
+            });
         }, config.refresh_interval);
     }).catch((reason) => {
         console.error("Error: " + reason);
