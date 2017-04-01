@@ -53,6 +53,8 @@ if (!config.demo_offline) {
     const cf_apps = new (require("cf-nodejs-client")).Apps(config.cloud_foundry.url);
     const cf_instances = new (require("cf-nodejs-client")).ServiceInstances(config.cloud_foundry.url);
 
+    var appGuid;
+
     cloud_controller.getInfo().then((result) => {
         user_uaa.setEndPoint(result.authorization_endpoint);
         return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
@@ -60,25 +62,26 @@ if (!config.demo_offline) {
         cf_apps.setToken(result);
         return cf_apps.getApps('name:snake-demo-instance')
     }).then((result) => {
+        appGuid = result.resources[0].metadata.guid;
+        return cf_apps.getStats(result.resources[0].metadata.guid)
+    }).then((result) => {
         setInterval(function () {
-            cf_apps.getStats(result.resources[0].metadata.guid).then((result) => {
-                for (var index in result) {
-                    console.log('http://' + result[index].stats.host + ':' + result[index].stats.port + '/move');
-                    request({
-                        url: 'http://' + result[index].stats.host + ':' + result[index].stats.port + '/move',
-                        json: true,
-                        timeout: config.refresh_interval,
-                    }, function (error, response, body) {
-                        if (!error && response.statusCode == 200) {
-                            record[body.instance] = parseInt(body.move);
-                        } else {
-                            record[body.instance] = 2;
-                        }
-                    });
-                }
-            }).catch((reason) => {
-                console.error("Error: " + reason);
-            });
+            for (var index = 0; index < result.length; index++) {
+                request({
+                    url: result[index].stats.urls[0],
+                    json: true,
+//                    timeout: config.refresh_interval,
+                    headers: {
+                        "X-CF-APP-INSTANCE": appGuid + ":" + index
+                    },
+                }, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        record[body.instance] = parseInt(body.move);
+                    } else {
+                        record[body.instance] = 2;
+                    }
+                });
+            }
         }, config.refresh_interval);
     }).catch((reason) => {
         console.error("Error: " + reason);
