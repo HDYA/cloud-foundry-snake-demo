@@ -13,8 +13,7 @@
     "instace"
   ],
   "dependencies": {
-    "express": "^4.13.3",
-    "node-uuid": "^1.4.8"
+    "express": "^4.13.3"
   },
   "author": "HDYA-BackFire",
   "license": "MIT"
