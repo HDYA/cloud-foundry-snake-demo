@@ -76,7 +76,7 @@ function setupQuery() {
             cf_apps.getStats(appGuid).then(function (result) {
                 for (var index = 0; result[index] != undefined; index++) {
                     request({
-                        url: 'http://' + result[index].stats.uris[0] + '/move',
+                        url: 'http://' + result[index].stats.uris[0] + '/move?index=' + index,
                         json: true,
                         //timeout: config.refresh_interval,
                         headers: {
@@ -84,9 +84,9 @@ function setupQuery() {
                         },
                     }, function (error, response, body) {
                         if (!error && response.statusCode == 200) {
-                            record[body.instance] = body.move ? 1 : 0;
+                            record[body.index] = body.move ? 1 : 0;
                         } else {
-                            record[body.instance] = 2;
+                            record[body.index] = error;
                         }
                     });
                 }

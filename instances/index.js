@@ -13,6 +13,7 @@ app.get('/move', function(req, res) {
     res.set({'Content-Type':'text/json'});
     res.send({
         instance: os.hostname(),
+        index: req.query.index,
         move: move,
     });
 });
