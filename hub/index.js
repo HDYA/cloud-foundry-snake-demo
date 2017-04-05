@@ -74,7 +74,7 @@ if (!config.demo_offline) {
                         },
                     }, function (error, response, body) {
                         if (!error && response.statusCode == 200) {
-                            record[body.instance] = parseInt(body.move);
+                            record[body.instance] = body.move ? 1 : 0;
                         } else {
                             record[body.instance] = 2;
                         }
