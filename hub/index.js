@@ -11,6 +11,7 @@ app.use('/demo', express.static('rattler-race'));
 console.log('Load static demo pages completed');
 
 var count = 0; // Count for test
+var appFound = false;
 
 if (config.demo_offline) {
     app.get('/record', function (req, res) {
@@ -46,7 +47,7 @@ if (config.demo_offline) {
 }
 console.log('Routers have been set');
 
-if (!config.demo_offline) {
+function setupQuery() {
     const cloud_controller = new (require("cf-nodejs-client")).CloudController(config.cloud_foundry.url);
     const user_uaa = new (require("cf-nodejs-client")).UsersUAA;
     const cf_apps = new (require("cf-nodejs-client")).Apps(config.cloud_foundry.url);
@@ -59,14 +60,23 @@ if (!config.demo_offline) {
         return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
     }).then((result) => {
         cf_apps.setToken(result);
-        return cf_apps.getApps('name:snake-demo-instance')
+        return cf_apps.getApps();
     }).then((result) => {
-        appGuid = result.resources[0].metadata.guid;
+        for (var index in result.resources) {
+            if (result.resources[index].entity.name == 'snake-demo-instance') {
+                appGuid = result.resources[index].metadata.guid;
+                appFound = true;
+                break;
+            }
+        }
+        if (!appFound) {
+            return;
+        }
         setInterval(function () {
-            cf_apps.getStats(result.resources[0].metadata.guid).then(function (result) {
+            cf_apps.getStats(appGuid).then(function (result) {
                 for (var index = 0; result[index] != undefined; index++) {
                     request({
-                        url: result[index].stats.uris[0] + '/move',
+                        url: 'http://' + result[index].stats.uris[0] + '/move',
                         json: true,
                         //timeout: config.refresh_interval,
                         headers: {
@@ -86,6 +96,10 @@ if (!config.demo_offline) {
         console.error("Error: " + reason);
     });
 };
+
+if (!config.demo_offline) {
+    setupQuery();
+}
 
 console.log('Hub program starts to listen on port', config.default_port);
 app.listen(config.default_port);
