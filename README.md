@@ -11,7 +11,7 @@ This project is a simple demo for cloud foundry to demo the process of its updat
 1.Deploy
 ---
 
-Please follow the steps listed [here](https://github.com/bingosummer/docs-deploying-cf) to deploy and setup cloud foundry on Azure.
+Please follow the steps listed [here](https://github.com/cloudfoundry-incubator/bosh-azure-cpi-release/blob/master/docs/guidance.md) to deploy and setup cloud foundry on Azure.
 
 2.Login into cloud foundry
 ---
@@ -49,6 +49,7 @@ Execute the following commands to push apps onto cloud foundry.
 Then when you open `http://demo-hub.REPLACE_WITH_CLOUD_FOUNDRY_PUBLIC_IP.xip.io/demo` with your browser, you should see the interface of the demo.
 
 5.Demo of instance update
+---
 
 Click `Remote Demo` on the webpage to enter the demo, you should see moving snakes each represents one instance of instance app.
 
@@ -61,6 +62,7 @@ Comment the sentence `move = true;` and uncomment the sentence `move = false;`
 Push instance app onto cloud foundry with command `cf push`, you should see moving snakes being guradually replaced with idle ones as new version of instance app being deployed.
 
 6.Demo of instance extend
+---
 
 Execute the following command on your devbox to change instance count into 20
 
