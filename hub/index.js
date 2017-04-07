@@ -90,6 +90,9 @@ function setupQuery() {
                         }
                     });
                 }
+                for (; record[index] != undefined; index++) {
+                    delete record[index];
+                }
             });
         }, config.refresh_interval);
     }).catch((reason) => {
