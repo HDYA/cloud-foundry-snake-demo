@@ -66,10 +66,6 @@ function setupQuery() {
         for (var index in result.resources) {
             if (result.resources[index].entity.name == 'snake-demo-instance') {
                 appGuid = result.resources[index].metadata.guid;
-                instanceCount = parseInt(result.resources[index].metadata.guid);
-                while(queue.length > instanceCount) {
-                    queue.shift();
-                }
                 appFound = true;
                 break;
             }
@@ -89,10 +85,12 @@ function setupQuery() {
                         },
                     }, function (error, response, body) {
                         if (!error && response.statusCode == 200) {
-                            if (queue[body.instance] != undefined) {
-                                delete queue[body.instance];
-                            } else while(queue.length > instanceCount - 1) {
-                                queue.shift();
+                            if (record[body.instance] != undefined) {
+                                for (var index in queue) {
+                                    if (queue[index] == body.instance) {
+                                        queue.splice(index, 1);
+                                    }
+                                }
                             }
                             queue.push(body.instance);
                             record[body.instance] = body.move ? 1 : 0;
@@ -103,6 +101,12 @@ function setupQuery() {
                         }
                     });
                 }
+                instanceCount = index;
+                console.log(queue.length, instanceCount);
+                while(queue.length > instanceCount) {
+                    delete record[queue.shift()];
+                }
+                console.log(JSON.stringify(queue));
             });
         }, config.refresh_interval);
     }).catch((reason) => {
