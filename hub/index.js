@@ -6,6 +6,7 @@ var app = express();
 var request = require('request');
 
 var record = {};
+var queue = [];
 
 app.use('/demo', express.static('rattler-race'));
 console.log('Load static demo pages completed');
@@ -65,6 +66,10 @@ function setupQuery() {
         for (var index in result.resources) {
             if (result.resources[index].entity.name == 'snake-demo-instance') {
                 appGuid = result.resources[index].metadata.guid;
+                instanceCount = parseInt(result.resources[index].metadata.guid);
+                while(queue.length > instanceCount) {
+                    queue.shift();
+                }
                 appFound = true;
                 break;
             }
@@ -84,9 +89,17 @@ function setupQuery() {
                         },
                     }, function (error, response, body) {
                         if (!error && response.statusCode == 200) {
-                            record[body.index] = body.move ? 1 : 0;
+                            if (queue[body.instance] != undefined) {
+                                delete queue[body.instance];
+                            } else while(queue.length > instanceCount - 1) {
+                                queue.shift();
+                            }
+                            queue.push(body.instance);
+                            record[body.instance] = body.move ? 1 : 0;
                         } else {
-                            record[body.index] = error;
+                            if (body && body.instance) {
+                                record[body.instance] = error;
+                            }    
                         }
                     });
                 }
