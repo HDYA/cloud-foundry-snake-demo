@@ -8,7 +8,7 @@ Overview
 
 This project is a simple demo for cloud foundry to demo the process of its updates and modification for apps.
 
-1.Deploy
+1.Deploy cloud foundry
 ---
 
 Please follow the steps listed [here](https://github.com/cloudfoundry-incubator/bosh-azure-cpi-release/blob/master/docs/guidance.md) to deploy and setup cloud foundry on Azure.
@@ -40,6 +40,7 @@ _This demo reference project rattler-race as submodule, do execute the last comm
 Modify configuration file at `hub/config.js`, replace `REPLACE_WITH_CLOUD_FOUNDRY_PUBLIC_IP` with you public IP for cloud foundry.
 
 Execute the following commands to push apps onto cloud foundry.
+
     cd instances
     cf push
 
@@ -57,14 +58,14 @@ On your devbox, modify file of instance `instance/index.js` with command
 
     vim instance/config.js
 
-Comment the sentence `move = true;` and uncomment the sentence `move = false;`
+Comment the sentence `move = true;` and uncomment the sentence `move = false;`.
 
-Push instance app onto cloud foundry with command `cf push`, you should see moving snakes being guradually replaced with idle ones as new version of instance app being deployed.
+Save `config.js` and push instance app onto cloud foundry with command `cf push`, you should see moving snakes gradually stop moving as new version of instance app being deployed.
 
-6.Demo of instance extend
+6.Demo of instance scale
 ---
 
-Execute the following command on your devbox to change instance count into 20
+Execute the following command onto your devbox to change instance count into 20
 
     cf scale snake-demo-instance -i 20
 
