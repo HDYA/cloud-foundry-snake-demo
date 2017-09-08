@@ -2,6 +2,7 @@ exports.cloud_foundry = {
     url: 'https://api.REPLACE_WITH_CLOUD_FOUNDRY_PUBLIC_IP.xip.io',
     username: 'admin',
     password: 'c1oudc0w',
+    sso: undefined,
 };
 
 exports.instance_app_name = 'snake-demo-instance';

@@ -13,9 +13,10 @@
     "hub"
   ],
   "dependencies": {
+    "cf-nodejs-client": "^0.13.0",
     "express": "^4.13.3",
     "request": "^2.81.0",
-    "cf-nodejs-client": "^0.13.0"
+    "request-promise-native": "^1.0.4"
   },
   "author": "HDYA-BackFire",
   "license": "MIT"

@@ -1,9 +1,10 @@
-var config = require('./config.js');
+const config = require('./config.js');
 
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
-var request = require('request');
+const request = require('request');
+const rp = require('request-promise-native');
 
 var record = {};
 
@@ -57,8 +58,27 @@ function setupQuery() {
 
     cloud_controller.getInfo().then((result) => {
         user_uaa.setEndPoint(result.authorization_endpoint);
-        return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
+        if (config.cloud_foundry.sso == undefined) {
+            return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
+        } else {
+            return rp({
+                url: config.cloud_foundry.url.replace('api', 'uaa') + '/oauth/token',
+                rejectUnauthorized: false,
+                json: true,
+                method: 'POST',
+                headers: {
+                    Authorization: 'Basic Y2Y6c2VjcmV0',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                form: {
+                    response_type: 'token',
+                    grant_type: 'password',
+                    passcode: config.cloud_foundry.sso,
+                },
+            })
+        }
     }).then((result) => {
+        console.log(result);
         cf_apps.setToken(result);
         return cf_apps.getApps();
     }).then((result) => {
@@ -77,6 +97,7 @@ function setupQuery() {
                 for (var index = 0; result[index] != undefined; index++) {
                     request({
                         url: 'http://' + result[index].stats.uris[0] + '/move?index=' + index,
+                        rejectUnauthorized: false,
                         json: true,
                         //timeout: config.refresh_interval,
                         headers: {
