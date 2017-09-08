@@ -1,6 +1,5 @@
 ---
 applications:
 - name: snake-demo-hub
-  host: demo-hub
   memory: 512m
   instances: 1
