@@ -63,7 +63,7 @@ function setupQuery() {
         return cf_apps.getApps();
     }).then((result) => {
         for (var index in result.resources) {
-            if (result.resources[index].entity.name == 'snake-demo-instance') {
+            if (result.resources[index].entity.name == config.instance_app_name) {
                 appGuid = result.resources[index].metadata.guid;
                 appFound = true;
                 break;

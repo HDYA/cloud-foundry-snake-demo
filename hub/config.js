@@ -4,6 +4,8 @@ exports.cloud_foundry = {
     password: 'c1oudc0w',
 };
 
+exports.instance_app_name = 'snake-demo-instance';
+
 exports.default_port = 8080;
 
 exports.demo_offline = false;
