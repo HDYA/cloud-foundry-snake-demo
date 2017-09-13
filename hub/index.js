@@ -61,24 +61,24 @@ function setupQuery() {
         if (config.cloud_foundry.sso == undefined) {
             return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
         } else {
+            console.log(`login with passcode ${config.cloud_foundry.sso}`);
             return rp({
                 url: config.cloud_foundry.url.replace('api', 'uaa') + '/oauth/token',
                 rejectUnauthorized: false,
                 json: true,
                 method: 'POST',
                 headers: {
-                    Authorization: 'Basic Y2Y6c2VjcmV0',
+                    'Authorization': 'Basic Y2Y6',
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 form: {
-                    response_type: 'token',
+                    client_id: "cf",
                     grant_type: 'password',
                     passcode: config.cloud_foundry.sso,
                 },
             })
         }
     }).then((result) => {
-        console.log(result);
         cf_apps.setToken(result);
         return cf_apps.getApps();
     }).then((result) => {
@@ -90,6 +90,7 @@ function setupQuery() {
             }
         }
         if (!appFound) {
+            console.log(`Error: No target app found`);
             return;
         }
         setInterval(function () {
