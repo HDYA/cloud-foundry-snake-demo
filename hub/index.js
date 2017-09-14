@@ -1,9 +1,10 @@
-var config = require('./config.js');
+const config = require('./config.js');
 
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
-var request = require('request');
+const request = require('request');
+const rp = require('request-promise-native');
 
 var record = {};
 
@@ -57,19 +58,39 @@ function setupQuery() {
 
     cloud_controller.getInfo().then((result) => {
         user_uaa.setEndPoint(result.authorization_endpoint);
-        return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
+        if (config.cloud_foundry.sso == undefined) {
+            return user_uaa.login(config.cloud_foundry.username, config.cloud_foundry.password);
+        } else {
+            console.log(`login with passcode ${config.cloud_foundry.sso}`);
+            return rp({
+                url: config.cloud_foundry.url.replace('api', 'uaa') + '/oauth/token',
+                rejectUnauthorized: false,
+                json: true,
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Basic Y2Y6',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                form: {
+                    client_id: "cf",
+                    grant_type: 'password',
+                    passcode: config.cloud_foundry.sso,
+                },
+            })
+        }
     }).then((result) => {
         cf_apps.setToken(result);
         return cf_apps.getApps();
     }).then((result) => {
         for (var index in result.resources) {
-            if (result.resources[index].entity.name == 'snake-demo-instance') {
+            if (result.resources[index].entity.name == config.instance_app_name) {
                 appGuid = result.resources[index].metadata.guid;
                 appFound = true;
                 break;
             }
         }
         if (!appFound) {
+            console.log(`Error: No target app found`);
             return;
         }
         setInterval(function () {
@@ -77,6 +98,7 @@ function setupQuery() {
                 for (var index = 0; result[index] != undefined; index++) {
                     request({
                         url: 'http://' + result[index].stats.uris[0] + '/move?index=' + index,
+                        rejectUnauthorized: false,
                         json: true,
                         //timeout: config.refresh_interval,
                         headers: {
