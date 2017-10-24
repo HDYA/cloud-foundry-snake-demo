@@ -96,21 +96,23 @@ function setupQuery() {
         setInterval(function () {
             cf_apps.getStats(appGuid).then(function (result) {
                 for (var index = 0; result[index] != undefined; index++) {
-                    request({
-                        url: 'http://' + result[index].stats.uris[0] + '/move?index=' + index,
-                        rejectUnauthorized: false,
-                        json: true,
-                        //timeout: config.refresh_interval,
-                        headers: {
-                            "X-CF-APP-INSTANCE": appGuid + ":" + index
-                        },
-                    }, function (error, response, body) {
-                        if (!error && response.statusCode == 200) {
-                            record[body.index] = body.move ? 1 : 0;
-                        } else {
-                            record[body.index] = error;
-                        }
-                    });
+                    if (result[index].stats) {
+                        request({
+                            url: 'http://' + result[index].stats.uris[0] + '/move?index=' + index,
+                            rejectUnauthorized: false,
+                            json: true,
+                            //timeout: config.refresh_interval,
+                            headers: {
+                                "X-CF-APP-INSTANCE": appGuid + ":" + index
+                            },
+                        }, function (error, response, body) {
+                            if (!error && response.statusCode == 200) {
+                                record[body.index] = body.move ? 1 : 0;
+                            } else {
+                                record[body.index] = error;
+                            }
+                        });
+                    }
                 }
                 for (; record[index] != undefined; index++) {
                     delete record[index];
